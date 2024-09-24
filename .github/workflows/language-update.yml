@@ -1,0 +1,22 @@
+name: Announce JSON File Changes in Languages Directory with Diff
+
+on:
+  push:
+    paths:
+      - Languages/*.json   # Monitor all .json files in the Languages directory
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Get file diff
+        run: |
+          DIFF=$(git diff HEAD^ HEAD Languages/*.json | head -c 1900) # Discord's character limit per message is 2000
+          echo "Diff is: $DIFF"
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{\"content\": \"The following changes were made to JSON files in the Languages directory:\n\`\`\`$DIFF\`\`\`\"}" \
+               ${{ secrets.DISCORD_WEBHOOK }}
