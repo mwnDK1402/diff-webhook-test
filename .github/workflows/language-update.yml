@@ -14,9 +14,10 @@ jobs:
 
       - name: Get file diff
         run: |
-          DIFF=$(git diff HEAD^ HEAD Languages/*.json | head -c 1900) # Discord's character limit per message is 2000
-          echo "Diff is: $DIFF"
+          DIFF=$(git diff HEAD^ HEAD Languages/*.json | head -c 1900) # Limit diff to 1900 characters for Discord
+          DIFF_ESCAPED=$(echo "$DIFF" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
+          echo "Diff is: $DIFF_ESCAPED"
           curl -H "Content-Type: application/json" \
                -X POST \
-               -d "{\"content\": \"The following changes were made to JSON files in the Languages directory:\n\`\`\`$DIFF\`\`\`\"}" \
+               -d "{\"content\": \"The following changes were made to JSON files in the Languages directory:\n\`\`\`$DIFF_ESCAPED\`\`\`\"}" \
                ${{ secrets.DISCORD_WEBHOOK }}
