@@ -14,6 +14,8 @@ jobs:
 
       - name: Post changes to Discord
         run: |
+          set -x
+
           # Get the diff and limit to 1900 characters
           CONTENT=$(git diff HEAD^ HEAD Languages/*.json | head -c 1900)
 
