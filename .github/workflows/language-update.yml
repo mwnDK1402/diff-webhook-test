@@ -1,23 +1,25 @@
-name: Announce JSON File Changes in Languages Directory with Diff
+name: Announce JSON File Changes with Diff
 
 on:
   push:
     paths:
-      - Languages/*.json   # Monitor all .json files in the Languages directory
+      - Languages/English.json
 
 jobs:
   announce:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          sparse-checkout: Languages/English.json
+          sparse-checkout-cone-mode: false
 
       - name: Post changes to Discord
         run: |
           # Get the diff and limit to 1900 characters
-          CONTENT=$(git diff HEAD^ HEAD Languages/*.json | head -c 1900)
+          CONTENT=$(git diff HEAD^ HEAD Languages/English.json | head -c 1900)
 
           ESCAPED_CONTENT=$(echo "$CONTENT" | awk '{
               gsub(/\\/, "\\\\");     # Backslash
